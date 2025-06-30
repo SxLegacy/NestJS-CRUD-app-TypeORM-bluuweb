@@ -12,21 +12,55 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<Role>(ROLES_KEY, [ //la anotación <> implica que lo que se devuelva sea de ese tipo especifico.
+    // const requiredRoles = this.reflector.getAllAndOverride<Role>(ROLES_KEY, [ //la anotación <> implica que lo que se devuelva sea de ese tipo especifico.
+    //   context.getHandler(),
+    //   context.getClass(),
+    // ]);
+
+    // if (!requiredRoles) {
+    //   return true;
+    // }
+
+    // const { user } = context.switchToHttp().getRequest();
+
+    // if (user.role === Role.ADMIN) { 
+    //   return true
+    // } //esto se coloca aqui xq este es el guard que vigila que role tiene el usuario que intenta ingresar
+
+    // return user.role === requiredRoles;
+
+    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [ // Cambia a Role[] para recibir el array
       context.getHandler(),
       context.getClass(),
     ]);
 
-    if (!requiredRoles) {
+    console.log('Roles Requeridos por el Decorador (en Guard):', requiredRoles); 
+
+    // Si no hay roles requeridos en la metadata, se permite el acceso (endpoint público o abierto a todos)
+    if (!requiredRoles || requiredRoles.length === 0) {
+      console.log('No hay roles requeridos. Acceso permitido.'); 
       return true;
     }
 
     const { user } = context.switchToHttp().getRequest();
+    console.log('Usuario Autenticado (del Request en Guard):', user); 
 
-    if (user.role === Role.ADMIN) { 
-      return true
-    } //esto se coloca aqui xq este es el guard que vigila que role tiene el usuario que intenta ingresar
+    // Validar si el usuario existe y tiene un rol
+    if (!user || !user.role) {
+      console.log('Usuario o rol no definido. Acceso denegado (403).'); 
+      return false; // No hay usuario o no tiene rol, denegar acceso
+    }
 
-    return user.role === requiredRoles;
+    
+    if (user.role === Role.ADMIN) { // Lógica para el rol de ADMIN (siempre tiene acceso total)
+      console.log('Usuario es ADMIN. Acceso permitido.'); 
+      return true;
+    }
+
+    // Verificar si el rol del usuario está incluido en los roles requeridos
+    const hasRequiredRole = requiredRoles.some((role) => user.role === role);
+    console.log(`Rol del Usuario: ${user.role}. ¿Tiene rol requerido (${requiredRoles.join(', ')}): ${hasRequiredRole}`); 
+
+    return hasRequiredRole;
   };  
 };

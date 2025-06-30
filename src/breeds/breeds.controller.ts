@@ -8,7 +8,7 @@ import { ApiBearerAuth, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger
 
 @ApiBearerAuth()
 @ApiTags('breeds')
-@Auth(Role.ADMIN)
+//@Auth(Role.ADMIN) lo  comente para que se pueda registrar en el swagger
 @ApiUnauthorizedResponse({
   description: 'Unauthorized Bearer Auth',
 })
