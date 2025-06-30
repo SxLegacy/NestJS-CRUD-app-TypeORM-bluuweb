@@ -37,7 +37,7 @@ export class RolesGuard implements CanActivate {
     console.log('Roles Requeridos por el Decorador (en Guard):', requiredRoles); 
 
     // Si no hay roles requeridos en la metadata, se permite el acceso (endpoint público o abierto a todos)
-    if (!requiredRoles || requiredRoles.length === 0) {
+    if (!requiredRoles || requiredRoles.length === 0) { //ahora es asi por el array
       console.log('No hay roles requeridos. Acceso permitido.'); 
       return true;
     }
@@ -58,7 +58,7 @@ export class RolesGuard implements CanActivate {
     }
 
     // Verificar si el rol del usuario está incluido en los roles requeridos
-    const hasRequiredRole = requiredRoles.some((role) => user.role === role);
+    const hasRequiredRole = requiredRoles.some((role) => user.role === role); //esta es la implementacion mas robusta y estandar
     console.log(`Rol del Usuario: ${user.role}. ¿Tiene rol requerido (${requiredRoles.join(', ')}): ${hasRequiredRole}`); 
 
     return hasRequiredRole;

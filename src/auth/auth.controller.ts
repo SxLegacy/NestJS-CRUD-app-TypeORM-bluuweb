@@ -10,7 +10,7 @@ import { Role } from '../common/enums/rol.enum';
 import { Auth } from './decorators/auth.decorators';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { ActiveUserInterface } from 'src/common/interfaces/active-user.interface';
-import { ApiBearerAuth, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -20,6 +20,7 @@ export class AuthController {
         private readonly authService: AuthService,
     ){}
 
+    @ApiOperation({ summary: '=> Para registrar a un usuario.' })
     @Post('register')
     register(
         @Body()
@@ -28,6 +29,7 @@ export class AuthController {
         return this.authService.register(registerDto);
     } 
     
+    @ApiOperation({ summary: '=> Logear el usuario para obtener permisos.' })
     @Post('login')
     login(
         @Body()
@@ -37,6 +39,7 @@ export class AuthController {
     }
 
     @ApiBearerAuth()
+    @ApiOperation({ summary: '=> Para verificar Perfil completo (solo admins).' })
     @Get('profile')
     @Auth(Role.ADMIN)
     profile(
